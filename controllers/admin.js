@@ -90,7 +90,8 @@ exports.postDeleteProduct = (req, res, next) => {
 
   Product.delete(prodId)
     .then((product) => {
-      return product.destroy();
+      console.log("product", product);
+      return product;
     })
     .then((result) => {
       console.log("DESTROYED PRODUCT");
