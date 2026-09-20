@@ -46,7 +46,7 @@ class Product {
       .catch((err) => console.log(err));
   }
 
-  static delete(prodId) {
+  static deleteById(prodId) {
     const db = getDb();
     return db
       .collection("products")

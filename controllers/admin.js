@@ -88,7 +88,7 @@ exports.getProducts = (req, res, next) => {
 exports.postDeleteProduct = (req, res, next) => {
   const prodId = req.body.productId;
 
-  Product.delete(prodId)
+  Product.deleteById(prodId)
     .then((product) => {
       console.log("product", product);
       return product;
