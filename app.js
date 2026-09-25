@@ -6,7 +6,7 @@ const mongoose = require("mongoose");
 
 const adminRoutes = require("./routes/admin");
 const shopRoutes = require("./routes/shop");
-const errorController = require("./controllers/error");
+const errorController = require("./controllers/errorController");
 // const User = require("./models/user");
 
 const app = express();
