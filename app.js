@@ -17,9 +17,9 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, "public")));
 
 app.use((req, res, next) => {
-  User.findById("6ab697d44abdffd875ec23fc")
+  User.findById("6ab698e003ebec549c7eab68")
     .then((user) => {
-      req.user = new User(user._id, user.name, user.email, user.cart);
+      req.user = user;
       next();
     })
     .catch((err) => console.log(err));
@@ -35,12 +35,16 @@ mongoose
     "mongodb+srv://ramachrand_db_user:m0iVv3iDVnuZRoCm@cluster0.ukvcdkp.mongodb.net/shop?appName=Cluster0",
   )
   .then((res) => {
-    const user = new User({
-      name: "Ramcharan",
-      email: "rcr@yopmail.com",
-      cart: { items: [] },
+    User.findOne().then((user) => {
+      if (!user) {
+        const user = new User({
+          name: "Ramcharan",
+          email: "rcr@yopmail.com",
+          cart: { items: [] },
+        });
+        user.save();
+      }
     });
-    user.save();
     app.listen(3000);
   })
   .catch((err) => console.log(err));
