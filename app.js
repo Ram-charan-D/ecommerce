@@ -6,11 +6,14 @@ const mongoose = require("mongoose");
 
 const adminRoutes = require("./routes/adminRoutes");
 const shopRoutes = require("./routes/shopRoutes");
+const authRoutes = require("./routes/auth");
+
 const errorController = require("./controllers/errorController");
 const User = require("./models/user");
 
 const app = express();
 dns.setServers(["8.8.8.8", "1.1.1.1"]); // Google and Cloudflare DNS
+
 app.set("view engine", "ejs");
 app.set("views", "views");
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -27,7 +30,7 @@ app.use((req, res, next) => {
 
 app.use("/admin", adminRoutes);
 app.use(shopRoutes);
-
+app.use(authRoutes);
 app.use(errorController.get404);
 
 mongoose
