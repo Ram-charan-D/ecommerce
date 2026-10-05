@@ -14,13 +14,22 @@ exports.postLogin = (req, res, next) => {
     .then((user) => {
       if (user) {
         req.session.isLoggedIn = true;
-        // req.session.user = user;
         req.session.userId = user._id.toString();
-        res.redirect("/");
+        req.session.save((err) => {
+          console.log(err);
+          res.redirect("/");
+        });
       }
     })
     .catch((err) => console.log(err));
   // req.body.password
   // req.isLoggedIn = true;
   // res.setHeader("Set-Cookie", "IsLoggedIn=true");
+};
+
+exports.postLogout = (req, res, next) => {
+  req.session.destroy((err) => {
+    console.log(err);
+    res.redirect("/");
+  });
 };
