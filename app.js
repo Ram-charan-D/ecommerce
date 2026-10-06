@@ -12,10 +12,10 @@ const MongoDBStore = require("connect-mongodb-session")(session);
 const csrf = require("@dr.pogodin/csurf");
 const flash = require("connect-flash");
 
-console.log("Csrf: ", csrf);
 const adminRoutes = require("./routes/adminRoutes");
 const shopRoutes = require("./routes/shopRoutes");
 const authRoutes = require("./routes/authRouter");
+const routes = require("./routes");
 
 const errorController = require("./controllers/errorController");
 const User = require("./models/user");
@@ -49,6 +49,7 @@ app.use(
   }),
 );
 app.use(csrfProtection);
+app.use(flash());
 
 app.use((req, res, next) => {
   if (!req.session.userId) {
@@ -75,9 +76,14 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use("/admin", adminRoutes);
-app.use(shopRoutes);
-app.use(authRoutes);
+// app.use("/admin", adminRoutes);
+// app.use(shopRoutes);
+// app.use(authRoutes);
+// app.use(errorController.get404);
+
+app.use(routes);
+
+// 404 handler stays at the bottom
 app.use(errorController.get404);
 
 mongoose
