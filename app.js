@@ -1,6 +1,5 @@
 const path = require("path");
 const dns = require("dns");
-
 // Set custom DNS immediately before any network/database calls
 dns.setServers(["8.8.8.8", "1.1.1.1"]);
 
@@ -9,7 +8,11 @@ const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const session = require("express-session");
 const MongoDBStore = require("connect-mongodb-session")(session);
+// const csrf = require("csurf");
+const csrf = require("@dr.pogodin/csurf");
+const flash = require("connect-flash");
 
+console.log("Csrf: ", csrf);
 const adminRoutes = require("./routes/adminRoutes");
 const shopRoutes = require("./routes/shopRoutes");
 const authRoutes = require("./routes/authRouter");
@@ -26,6 +29,7 @@ const store = new MongoDBStore({
   uri: MONGODBURI,
   collection: "sessions",
 });
+const csrfProtection = (csrf.default || csrf)();
 
 store.on("error", function (error) {
   console.log("Session store error:", error);
@@ -44,6 +48,7 @@ app.use(
     store: store,
   }),
 );
+app.use(csrfProtection);
 
 app.use((req, res, next) => {
   if (!req.session.userId) {
@@ -62,6 +67,12 @@ app.use((req, res, next) => {
       console.log(err);
       next(err);
     });
+});
+
+app.use((req, res, next) => {
+  res.locals.isAuthenticated = req.session.isLoggedIn;
+  res.locals.csrfToken = req.csrfToken();
+  next();
 });
 
 app.use("/admin", adminRoutes);
