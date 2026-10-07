@@ -1,5 +1,16 @@
 const bcrypt = require("bcryptjs");
 const User = require("../models/user");
+const nodemailer = require("nodemailer");
+const sendGridTransport = require("nodemailer-sendgrid-transport");
+
+const transporter = nodemailer.createTransport(
+  sendGridTransport({
+    auth: {
+      api_key:
+        "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",
+    },
+  }),
+);
 
 exports.getLogin = (req, res, next) => {
   const errorMessage = req.flash("error");
@@ -60,28 +71,46 @@ exports.getSignup = (req, res, next) => {
     errorMessage: errorMessage.length > 0 ? errorMessage[0] : null,
   });
 };
-exports.postSignup = (req, res, next) => {
-  const email = req.body.email;
-  const password = req.body.password;
-  const confirmPassword = req.body.confirmPassword;
 
-  User.findOne({ email: email })
-    .then((user) => {
-      if (user) {
-        req.flash("error", "Email exists already, pick a different one.");
-        return res.redirect("/signup");
-      }
-      return bcrypt.hash(password, 12).then((hashedPass) => {
-        const newUser = new User({
-          email: email,
-          password: hashedPass,
-          cart: { items: [] },
-        });
-        return newUser.save();
+exports.postSignup = async (req, res, next) => {
+  const { email, password, confirmPassword } = req.body;
+
+  try {
+    // if (password !== confirmPassword) {
+    //   req.flash("error", "Passwords do not match.");
+    //   return res.redirect("/signup");
+    // }
+
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      req.flash("error", "Email exists already, pick a different one.");
+      return res.redirect("/signup");
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 12);
+    const user = new User({
+      email,
+      password: hashedPassword,
+      cart: { items: [] },
+    });
+    await user.save();
+
+    res.redirect("/login");
+
+    transporter
+      .sendMail({
+        to: email,
+        from: "ramcharanreddy1111@gmail.com",
+        subject: "Signup Succeeded",
+        html: "<h1>Welcome to our shop!</h1>",
+      })
+      .catch((mailErr) => {
+        console.error("Background email delivery failed:", mailErr);
       });
-    })
-    .then((result) => {
-      res.redirect("/login");
-    })
-    .catch((err) => console.log(err));
+  } catch (err) {
+    const error = new Error(err);
+    error.httpStatusCode = 500;
+    next(error);
+  }
 };
+
