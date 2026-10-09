@@ -18,6 +18,10 @@ router.post("/login", authController.postLogin);
 router.post("/logout", authController.postLogout);
 router.get("/signup", authController.getSignup);
 router.post("/signup", authController.postSignup);
+router.get("/reset", authController.getReset);
+router.post("/reset", authController.postReset);
+router.get("/new-password/:token", authController.getNewPassword);
+router.post("/new-password", authController.postNewPassword);
 
 // ========================
 // Shop Routes
@@ -37,7 +41,11 @@ router.get("/orders", isAuth, shopController.getOrders);
 router.get("/admin/add-product", isAuth, adminController.getAddProduct);
 router.post("/admin/add-product", isAuth, adminController.postAddProduct);
 router.get("/admin/products", isAuth, adminController.getProducts);
-router.get("/admin/edit-product/:productId", isAuth, adminController.getEditProduct);
+router.get(
+  "/admin/edit-product/:productId",
+  isAuth,
+  adminController.getEditProduct,
+);
 router.post("/admin/edit-product", isAuth, adminController.postEditProduct);
 router.post("/admin/delete-product", isAuth, adminController.postDeleteProduct);
 
