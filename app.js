@@ -20,13 +20,10 @@ const routes = require("./routes");
 const errorController = require("./controllers/errorController");
 const User = require("./models/user");
 
-const MONGODBURI =
-  "mongodb+srv://ramachrand_db_user:m0iVv3iDVnuZRoCm@cluster0.ukvcdkp.mongodb.net/shop?appName=Cluster0";
-
 const app = express();
 
 const store = new MongoDBStore({
-  uri: MONGODBURI,
+  uri: process.env.MONGODBURI,
   collection: "sessions",
 });
 const csrfProtection = (csrf.default || csrf)();
@@ -87,7 +84,7 @@ app.use(routes);
 app.use(errorController.get404);
 
 mongoose
-  .connect(MONGODBURI)
+  .connect(process.env.MONGODBURI)
   .then(() => {
     app.listen(3000, () => console.log("Server running on port 3000"));
   })

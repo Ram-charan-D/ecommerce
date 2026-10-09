@@ -12,8 +12,7 @@ const randomBytesAsync = promisify(crypto.randomBytes);
 const transporter = nodemailer.createTransport(
   sendGridTransport({
     auth: {
-      api_key:
-        "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",
+      api_key: process.env.SENDGRID_API_KEY,
     },
   }),
 );
